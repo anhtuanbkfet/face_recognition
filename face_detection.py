@@ -100,10 +100,11 @@ if __name__ == "__main__":
 
         # detect faces:
         frame_copy = cv2.resize(frame_copy, (int(w/scale_factor), int(h/scale_factor)))
-        faceRects, time_elapsed = detect_faces(frame_copy, scale_factor)
-        if len(faceRects)>0:
-            print('detect {} faces on frame, time elapsed: {} second'.format(len(faceRects), time_elapsed))
-        # mark with green rectangles:
+        faceRects, time_detect = detect_faces(frame_copy, scale_factor)
+        # if len(faceRects) > 0:
+            # print('detect {} faces on frame, time elapsed: {} second'.format(len(faceRects), time_detect))
+        
+        time_recognize = 0
         for i,faceRect in enumerate(faceRects):
             x1 = faceRect.left()
             y1 = faceRect.top()
@@ -120,8 +121,8 @@ if __name__ == "__main__":
                 face = frame[y1:y2,x1:x2]
                 emb_vec = calc_emb_vector(alignment, emb_model, face)
                 class_idx, min_distance = find_nearlest_face(emb_vec, train_embs, label2idx, nb_classes)
-                time_elapsed = time.time()-time_start
-                print('face recognized, time elapsed: {} second'.format(time_elapsed))
+                time_recognize += time.time()-time_start
+                # print('face recognized, time elapsed: {} second'.format(time_recognize))
 
                 if min_distance > threshold:
                     class_name = "unknown"
@@ -134,6 +135,7 @@ if __name__ == "__main__":
                 cv2.putText(frame,'{} ({:.04f})'.format(class_name, min_distance),(x1,y1-5), cv2.FONT_HERSHEY_SIMPLEX, 1,(0,255,0),1,cv2.LINE_AA)
     
         frame_count+=1
+        cv2.putText(frame,'Face (time detect/recogn): {} ({:.04f}/{:.04f} s)'.format(len(faceRects), time_detect, time_recognize),(20,50), cv2.FONT_HERSHEY_SIMPLEX, 1,(0,255,0),1,cv2.LINE_AA)
         cv2.imshow("video",frame)
             
         if cv2.waitKey(1) & 0xFF == ord('q'):
