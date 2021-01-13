@@ -100,11 +100,11 @@ def calc_emb_test(faces):
 # TRAINING
 label2idx = []
 
-for i in tqdm(range(len(train_paths))):
+for i in range(len(train_paths)):
     label2idx.append(np.asarray(df_train[df_train.label == i].index))
 
 train_embs = calc_embs(df_train.image)
-np.save("train_embs.npy", train_embs)
+np.save("train_embs.npy", train_embs, allow_pickle=True)
 
 train_embs = np.concatenate(train_embs)
 
