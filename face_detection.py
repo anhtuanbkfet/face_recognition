@@ -13,7 +13,7 @@ from model import create_model
 # setup
 save_faces = False
 recognize_face = True
-threshold = 0.8
+threshold = 0.65
 scale_factor = 4
 out_save_dir = 'DATASET/UNKNOWN'
 #######################################
@@ -73,8 +73,8 @@ def find_nearlest_face(emb_vec, train_embs, label2idx, nb_classes):
 
 if __name__ == "__main__":
 
-    # stream_url = 'rtsp://admin:MOlang1992@192.168.1.125:554/cam/realmonitor?channel=1&subtype=0'
-    stream_url = 'videos/2.mp4'
+    stream_url = 'rtsp://admin:MOlang1992@192.168.1.125:554/cam/realmonitor?channel=1&subtype=0'
+    # stream_url = 'videos/2.mp4'
 
     capture = cv2.VideoCapture(stream_url)
 
