@@ -20,4 +20,4 @@ To training face recognize model, run:
 To run test app, run:
     python face_detection.py (remember that set save_faces = False firstly)
 
-    All face that detects by unknown label, will be saved to DATASET/UNKNOWN folder while app is running.
+    All faces that detect by unknown label, will be saved to DATASET/UNKNOWN folder while app is running.
