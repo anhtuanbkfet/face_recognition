@@ -9,10 +9,14 @@ from scipy.spatial import distance
 from face_alignment import AlignDlib
 from model import create_model
 
+import os
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+
 #######################################
 # setup
 save_faces = False
 recognize_face = True
+save_output_video = False
 threshold = 0.65
 scale_factor = 4
 out_save_dir = 'DATASET/UNKNOWN'
@@ -73,14 +77,19 @@ def find_nearlest_face(emb_vec, train_embs, label2idx, nb_classes):
 
 if __name__ == "__main__":
 
-    stream_url = 'rtsp://admin:MOlang1992@192.168.1.125:554/cam/realmonitor?channel=1&subtype=0'
-    # stream_url = 'videos/2.mp4'
+    # stream_url = 'rtsp://admin:MOlang1992@192.168.1.125:554/cam/realmonitor?channel=1&subtype=0'
+    stream_url = 'videos/2.mp4'
 
     capture = cv2.VideoCapture(stream_url)
 
     # Define the codec and create VideoWriter object
     w = capture.get(cv2.CAP_PROP_FRAME_WIDTH)
     h = capture.get(cv2.CAP_PROP_FRAME_HEIGHT)
+    
+    if save_output_video:
+        # video writer:
+        fourcc = cv2.VideoWriter_fourcc('M','J','P','G')
+        writer = cv2.VideoWriter('videos/output.mp4', fourcc, 24.0, (int(w),int(h)))
 
     if recognize_face:
         alignment = AlignDlib('pre_models/shape_predictor_68_face_landmarks.dat')
@@ -91,6 +100,7 @@ if __name__ == "__main__":
     cv2.namedWindow('video', cv2.WINDOW_NORMAL)
     frame_count = 0
 
+    time_begin = time.time()
     while True:
         ret, frame = capture.read()
         if not ret:
@@ -137,8 +147,15 @@ if __name__ == "__main__":
         frame_count+=1
         cv2.putText(frame,'Face (time detect/recogn): {} ({:.04f}/{:.04f} s)'.format(len(faceRects), time_detect, time_recognize),(20,50), cv2.FONT_HERSHEY_SIMPLEX, 1,(0,255,0),1,cv2.LINE_AA)
         cv2.imshow("video",frame)
-            
+        
+        # save to video output file: 
+        if save_output_video: 
+            writer.write(frame)
+
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
     
     capture.release()
+    if save_output_video:   
+        writer.release()
+    print('Process completed, time elapsed: {} seconds'.format(time.time() - time_begin))
